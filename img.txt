@@ -1,0 +1,48 @@
+ //Handle File Uploading Here 
+        if($request->hasFile('cover_image')){
+            //Get Filename with Extension ... gets the image exactly with the extension
+            $filenameWithExt = $request->file('cover_image')->getClientOriginalName();
+            //Get Just Filename
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME); //this is just php
+            //Get Just the Extension 
+            $extension = $request->file('cover_image')->getClientOriginalExtension();
+            //filename to store
+            $FilenametoStore = $filename.'_'.time().'.'.$extension; // call the filname and timestamp
+            //UPload Image
+            $path = $request->file('cover_image')->storeAs('public/cover_images', $FilenametoStore); // goes to storage/app/public write php artisan storage:link cause by default it is not accesible
+        } else {
+            $FilenametoStore = "noimage.jpg";
+        }
+
+
+
+        if($request->hasFile('photo')){
+    //Get Filename with Extension ... gets the image exactly with the extension\
+    $filenameWithExt = $request->file('photo')->getClientOriginalName();
+
+    //Get Just Filename
+    $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME); //this is just php
+
+    //Get Just the Extension 
+    $extension = $request->file('photo')->getClientOriginalExtension();
+
+    //filename to store
+    $FilenametoStore = $filename.'_'.time().'.'.$extension; // call the filname and timestamp
+
+    //UPload image
+    $path = $request->file('photo')->storeAs('public/photos/'.$request->input('album_id'), $FilenametoStore); // goes to storage/app/public write php artisan storage:link cause by default it is not accesible
+    
+} else {
+    $FilenametoStore = "noimage.jpg";
+}
+//UPload Photo
+$photo = new Photo;
+$photo->album_id = $request->input('album_id');
+$photo->title = $request->input('title');
+$photo->description = $request->input('description');
+$photo->size = $request->file('photo')->getClientSize();
+$photo->photo = $FilenametoStore;
+$photo->save();
+return redirect('/albums/'.$request->input('album_id'))->with('success', 'Photos Uploaded');
+    }
+}
